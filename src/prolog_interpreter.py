@@ -4,13 +4,13 @@ def parse_prolog(prolog_filename:str) -> str:
 
 PROLOG_RULE_DEFINER = ":-"
 PROLOG_RULE_END = "."
-PROLOG_RULE_SEPARATOR = ","
-PROLOG_PREDICATE_SEPARATOR = "/"
+PROLOG_RULE_SEPARATOR = ";"
+PROLOG_PREDICATE_SEPARATOR = ","
 PROLOG_PREDICATE_START = "("
 PROLOG_PREDICATE_END = ")"
 INDENT = "\t"
 
-def parse_prolog_rule(prolog_rule:str) -> str:
+def convert_prolog_rule(prolog_rule:str) -> str:
     INDENT_LEVEL = 0
     seen_conditionals = set()
     prolog_rule = prolog_rule.strip()
@@ -48,16 +48,17 @@ def parse_prolog_rule(prolog_rule:str) -> str:
                 python_code += f"{INDENT*INDENT_LEVEL}{list_conditional}={variable}\n"
                 seen_conditionals.add(list_conditional)
 
-    python_code += f"{INDENT*INDENT_LEVEL}yield {','.join(results)}"
+    python_code += f"{INDENT*INDENT_LEVEL}yield {','.join(seen_conditionals)}"
     return python_code
 
+FILENAME = "example"
+PATH_IN = f"prolog_programs/{FILENAME}.pl"
+PATH_OUT = f"converted_programs/{FILENAME}.py"
 
-python_code = parse_prolog_rule("""
-example_program :-
-    married_to(X/Y),
-	human(X),
-	female(Y).
-""")
+with open(PATH_IN) as prolog_file:
+    prolog_code = prolog_file.read()
+
+python_code = convert_prolog_rule(prolog_code)
 
 additional_script = """
 
@@ -84,5 +85,5 @@ print(list(example_program()))
 
 """
 
-with open("converted_programs/example.py","w") as f:
+with open(PATH_OUT,"w") as f:
     f.write(python_code + additional_script)

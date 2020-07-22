@@ -6,7 +6,7 @@ def example_program():
 			if X==human_0:
 				for female_0 in female:
 					if Y==female_0:
-						yield Y,X
+						yield X,Y
 
 married_to = [
     ("dery","rouhy"),
