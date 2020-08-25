@@ -108,6 +108,20 @@ def convert_prolog_rule(prolog_rule:str) -> str:
     python_code += f"{INDENT*INDENT_LEVEL}yield {','.join(seen_conditionals)}"
     return python_code
 
+def convert_prolog_to_python(prolog_predicates:str, prolog_rules:str) -> str:
+    """ convert prolog syntax into python syntax """
+    data = {}
+    prolog_predicates = prolog_predicates.split("\n")
+    
+    for predicate in prolog_predicates:
+        convert_prolog_predicate(predicate,data)
+    data_code = convert_data(data)
+    prolog_rule_code = convert_prolog_rule(prolog_rules)
+    execute_command = """
+print(list(example_program()))
+    """
+    return data_code + prolog_rule_code + execute_command
+
 def convert_prolog_program_to_python(prolog_filename:str) -> str:
     """ convert prolog syntax into python syntax for executing"""
     PATH_IN = f"prolog_programs/{prolog_filename}.pl"
@@ -116,9 +130,8 @@ def convert_prolog_program_to_python(prolog_filename:str) -> str:
     with open(PATH_IN) as prolog_file:
         prolog_code = prolog_file.read()
 
-    data = {}
-
-    prolog_predicates = """married_to(dery,rouhy).
+    python_code = convert_prolog_to_python(
+        prolog_predicates="""married_to(dery,rouhy).
     married_to(garry,bob).
     married_to(faizan,shenny).
     human(dery).
@@ -130,19 +143,12 @@ def convert_prolog_program_to_python(prolog_filename:str) -> str:
     human(shenny).
     female(rouhy).
     female(fahtima).
-    female(shenny).""".split("\n")
-    
-    for predicate in prolog_predicates:
-        convert_prolog_predicate(predicate,data)
-    data_code = convert_data(data)
-    prolog_rule_code = convert_prolog_rule(prolog_code)
-    execute_command = """
-print(list(example_program()))
-    """
-    python_code = data_code + prolog_rule_code + execute_command
+    female(shenny).""",
+        prolog_rules=prolog_code
+    )
 
     with open(PATH_OUT,"w") as f:
         f.write(python_code)
 
 
-convert_prolog_program_to_python("example")
+#convert_prolog_program_to_python("example")

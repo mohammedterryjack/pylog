@@ -37,6 +37,6 @@ def example_program():
 			if X==human_0:
 				for female_0 in data['female/1']:
 					if Y==female_0:
-						yield X,Y
+						yield Y,X
 print(list(example_program()))
     
